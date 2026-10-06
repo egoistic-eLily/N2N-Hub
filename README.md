@@ -1,9 +1,7 @@
 # N2N-Hub
 
-# N2N-Hub
-
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](LICENSE)
-[![Language](https://img.shields.io/badge/Language-English-blue)](README.md) [![文档](https://img.shields.io/badge/文档-中文-red)](README.zh-CN.md)
+[![Language](https://img.shields.io/badge/Language-English-blue)](README.md) [![文档](https://img.shields.io/badge/文档-中文-red)](docs/README.zh-CN.md)
 
 **N2N-Hub is a lightweight management platform for [n2n](https://github.com/ntop/n2n) VPN deployments.**
 
