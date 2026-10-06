@@ -1,0 +1,3 @@
+# Third-party source
+thirdparty/n2n/** linguist-vendored
+thirdparty/n2n/** whitespace=-trailing-space

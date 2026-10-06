@@ -1,0 +1,92 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Serilog;
+
+namespace N2N_USER_SERVER.Bootstrap
+{
+    public static class HttpBootstrap
+    {
+        public static void Setup() {
+            var app = CreateApp();
+            ConfigureRoute(app);
+            try {
+                Services.ErrorReporter.Report(Services.LogLevel.Info, $"路由注册完成-HTTPS监听端口{Initialization.config.port}");
+                app.Run();
+            }
+            finally {
+                //退出前刷新日志缓冲
+                Log.CloseAndFlush();
+            }
+        }
+        private static WebApplication CreateApp() {
+            //获得一个WebApplicationBuilder实例
+            var builder = WebApplication.CreateBuilder();
+            ConfigureWebHost(builder);
+            return builder.Build();
+
+            //构建
+            static void ConfigureWebHost(WebApplicationBuilder builder) {
+                builder.WebHost.ConfigureKestrel(ConfigureKestrel);
+            }
+            //监听端口配置
+            static void ConfigureKestrel(KestrelServerOptions options) {
+                options.ListenAnyIP(Initialization.config.port,ConfigureListen);
+            }
+            //https配置
+            static void ConfigureListen(ListenOptions options) {
+                options.UseHttps(Initialization.config.pfxpath, Initialization.config.pfxpassword);
+            }
+        }
+
+        private static void ConfigureRoute(WebApplication app) {
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            //app登录api
+            app.MapPost("/login", (Func<HttpContext, Task<IResult>>)API.LoginApi.Login);
+            //后端登录界面
+            app.MapGet("/admin_login", (Func<HttpContext, Task<IResult>>)API.LoginApi.Admin_login_Html);
+            //后端登录api
+            app.MapPost("/api/login", (Func<HttpContext, Task<IResult>>)API.LoginApi.Admin_Login);
+            //后端管理index界面
+            app.MapGet("/admin",(Func<HttpContext,Task<IResult>>)API.LoginApi.Admin_Index);
+            //用户管理界面
+            app.MapGet("/users", (Func<HttpContext, Task<IResult>>)API.LoginApi.Admin_Users_Tools);
+            //用户配置管界面
+            app.MapGet("/configs", (Func<HttpContext, Task<IResult>>)API.LoginApi.Admin_Config_Tools);
+            //获取用户数据api
+            app.MapPost("/api/getuserdata", (Func<HttpContext, Task<IResult>>)API.LoginApi.Re_User_Data);
+            //获取社区数据api
+            app.MapPost("/api/get_communitydata", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.Re_Community_Data);
+            //获取用户配置api
+            app.MapPost("/api/getusersconfig", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.Re_User_Config);
+            //创建用户api
+            app.MapPost("/api/create_user", (Func<HttpContext, Task<IResult>>)API.LoginApi.Create_User);
+            //创建社区api
+            app.MapPost("/api/create_community", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.ADD_Community);
+            //创建用户配置api
+            app.MapPost("/api/create_config", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.AddUserConfig);
+            //删除用户api
+            app.MapPost("/api/delete_user", (Func<HttpContext, Task<IResult>>)API.LoginApi.Delete_User);
+            //删除社区api
+            app.MapPost("/api/delete_community", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.Delete_Community);
+            //删除用户配置
+            app.MapPost("/api/deleteuserdata",(Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.DeleteUserData);
+            //修改用户api
+            app.MapPost("/api/revise_user", (Func<HttpContext, Task<IResult>>)API.LoginApi.Revise_User);
+            //修改社区api
+            app.MapPost("/api/revise_community", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.ReviseCommunity);
+            //修改用户配置api
+            app.MapPost("/api/revise_config", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.Revise_UserConfig);
+            //退出登录api
+            app.MapPost("/api/logout", (Func<HttpContext, Task<IResult>>)API.LoginApi.LogOut);
+
+            //热重启Supernode服务
+            app.MapPost("/api/supernodeserver/hotreload", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.HotReload_SupernodeServer);
+            //硬重启
+            app.MapPost("/api/supernodeserver/hardreboot", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.HardReboot_SupernodeServer);
+            //停止
+            app.MapPost("/api/supernodeserver/stop", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.Stop_SupernodeServer);
+            //启动
+            app.MapPost("/api/supernodeserver/start", (Func<HttpContext, Task<IResult>>)API.Supernode.SupernodeAPI.Start_SupernodeServer);
+        }
+    }
+}
