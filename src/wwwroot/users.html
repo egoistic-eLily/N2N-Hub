@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 — N2N User Server</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">N2</div>
+            <div>
+                <div class="brand-name">N2N User Server</div>
+                <div class="brand-sub">管理控制台</div>
+            </div>
+        </div>
+        <nav class="nav" id="Nav">
+            <a data-href="/admin" data-nav="admin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                控制台
+            </a>
+            <a data-href="/users" data-nav="users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                用户管理
+            </a>
+            <a data-href="/configs" data-nav="configs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+                设备配置
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <a href="#" id="LogoutBtn" style="all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:8px;color:#aab1c0;font-size:13.5px;">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                退出登录
+            </a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1>用户管理</h1>
+                <p class="desc">管理可登录控制台下发的用户账号（密码以 BCrypt 哈希存储）</p>
+            </div>
+            <button class="btn primary" id="BtnAddUser">＋ 新建用户</button>
+        </header>
+
+        <div class="content">
+            <section class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>用户名</th><th>状态</th>
+                                <th>设备配置</th><th style="text-align:right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="UserRows"></tbody>
+                    </table>
+                    <div class="empty" id="UserEmpty" style="display:none">暂无用户，点击右上角“新建用户”创建</div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- 用户 新建/编辑 弹窗 -->
+<dialog class="dialog" id="UserDialog">
+    <form id="UserForm">
+        <div class="dialog-head">
+            <h3 id="UserDialogTitle">新建用户</h3>
+            <p id="UserDialogSub">用户名唯一；密码由服务端 BCrypt 哈希后存储</p>
+        </div>
+        <div class="dialog-body">
+            <div class="field">
+                <label for="UUsername">用户名</label>
+                <input class="input" id="UUsername" required>
+            </div>
+            <div class="field">
+                <label for="UPassword">密码 <span class="tip" id="UPasswordTip"></span></label>
+                <input class="input" id="UPassword" type="password" autocomplete="new-password">
+            </div>
+            <div class="field">
+                <label class="check" for="UEnabled">
+                    <input type="checkbox" id="UEnabled" checked>
+                    启用该账号（禁用后无法登录）
+                </label>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn" id="UserCancel">取消</button>
+                <button type="submit" class="btn primary" id="UserSave">保存</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<!-- 通用确认弹窗 -->
+<dialog class="dialog" id="ConfirmDialog">
+    <form method="dialog">
+        <div class="dialog-head"><h3 id="ConfirmTitle">确认操作</h3></div>
+        <div class="dialog-body">
+            <p class="confirm-msg"></p>
+            <div class="form-actions">
+                <button type="button" class="btn" id="ConfirmCancel">取消</button>
+                <button type="button" class="btn primary" id="ConfirmOk">确认</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<script src="js/common.js"></script>
+<script src="js/users.js"></script>
+</body>
+</html>

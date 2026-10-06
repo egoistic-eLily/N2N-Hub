@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录 — N2N User Server</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <main class="login-wrap">
+        <section class="login-card">
+            <div class="login-brand">
+                <div class="brand-mark">N2</div>
+                <div>
+                    <h1>N2N User Server</h1>
+                    <p>超级节点 · 用户与配置管理控制台</p>
+                </div>
+            </div>
+
+            <div id="LoginError" class="login-error"></div>
+
+            <form id="LoginForm">
+                <div class="field">
+                    <label for="username">用户名</label>
+                    <input class="input" id="username" name="username" type="text"
+                           autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label for="password">密码</label>
+                    <input class="input" id="password" name="password" type="password"
+                           autocomplete="current-password" required>
+                </div>
+                <button class="btn primary" id="LoginBtn" type="submit" style="width:100%;margin-top:6px;">
+                    登 录
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

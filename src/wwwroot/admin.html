@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>控制台 — N2N User Server</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">N2</div>
+            <div>
+                <div class="brand-name">N2N User Server</div>
+                <div class="brand-sub">管理控制台</div>
+            </div>
+        </div>
+        <nav class="nav" id="Nav">
+            <a data-href="/admin" data-nav="admin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                控制台
+            </a>
+            <a data-href="/users" data-nav="users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                用户管理
+            </a>
+            <a data-href="/configs" data-nav="configs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+                设备配置
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <a href="#" id="LogoutBtn" class="nav" style="all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:8px;color:#aab1c0;font-size:13.5px;">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                退出登录
+            </a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1>控制台</h1>
+                <p class="desc">总览服务数据，管理社区与超级节点</p>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- 统计 -->
+            <div class="stats">
+                <div class="card stat"><div class="label">用户账号</div><div class="num" id="StatUsers">—</div></div>
+                <div class="card stat"><div class="label">设备配置</div><div class="num" id="StatConfigs">—</div></div>
+                <div class="card stat"><div class="label">社区</div><div class="num" id="StatCommunities">—</div></div>
+            </div>
+
+            <!-- 服务控制 -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h2>Supernode 服务控制</h2>
+                        <p class="sub">对运行中的超级节点进程执行管理动作（需在 config.json 中开启管理口）</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="service-grid">
+                        <div class="service-item">
+                            <div class="s-name">热重载</div>
+                            <div class="s-desc">通知 supernode 重读白名单文件（reload_communities）</div>
+                            <button class="btn small" id="BtnHotReload">执行热重载</button>
+                        </div>
+                        <div class="service-item">
+                            <div class="s-name">启动</div>
+                            <div class="s-desc">拉起 supernode 进程（已运行时无副作用）</div>
+                            <button class="btn small" id="BtnStart">启动服务</button>
+                        </div>
+                        <div class="service-item">
+                            <div class="s-name">停止</div>
+                            <div class="s-desc">终止 supernode 进程，在线用户将断开</div>
+                            <button class="btn small danger" id="BtnStop">停止服务</button>
+                        </div>
+                        <div class="service-item">
+                            <div class="s-name">硬重启</div>
+                            <div class="s-desc">停止后重新拉起，用于热重载失效等场景</div>
+                            <button class="btn small danger" id="BtnHardReboot">硬重启</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 社区管理 -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h2>社区管理</h2>
+                        <p class="sub">community.list 以数据库为唯一事实源，每次变更后自动全量同步</p>
+                    </div>
+                    <button class="btn primary" id="BtnAddCommunity">＋ 新建社区</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>社区名</th><th>类型</th><th>网络 (network)</th>
+                                <th>社区密钥</th><th style="text-align:right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="CommunityRows"></tbody>
+                    </table>
+                    <div class="empty" id="CommunityEmpty" style="display:none">暂无社区，点击右上角“新建社区”创建</div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- 社区 新建/编辑 弹窗 -->
+<dialog class="dialog" id="CommunityDialog">
+    <form id="CommunityForm">
+        <div class="dialog-head">
+            <h3 id="CommunityDialogTitle">新建社区</h3>
+            <p>社区名唯一；修改操作以社区名定位</p>
+        </div>
+        <div class="dialog-body">
+            <div class="field">
+                <label for="CName">社区名 <span class="tip">固定名或正则表达式</span></label>
+                <input class="input" id="CName" required>
+            </div>
+            <div class="field">
+                <label for="CType">类型</label>
+                <select class="select" id="CType">
+                    <option value="_fixed">固定名（固定社区）</option>
+                    <option value="_regex">正则（按表达式匹配一批社区）</option>
+                </select>
+            </div>
+            <div class="field" id="CNetworkField">
+                <label for="CNetwork">网络 <span class="tip">可选，a.b.c.d/bit</span></label>
+                <input class="input" id="CNetwork" placeholder="留空表示不指定">
+            </div>
+            <div class="field">
+                <label for="CKey">社区密钥 <span class="tip">可选；仅随 /login 下发客户端，不写入白名单</span></label>
+                <input class="input" id="CKey" placeholder="留空表示不设置">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn" id="CommunityCancel">取消</button>
+                <button type="submit" class="btn primary" id="CommunitySave">保存</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<!-- 通用确认弹窗 -->
+<dialog class="dialog" id="ConfirmDialog">
+    <form method="dialog">
+        <div class="dialog-head"><h3 id="ConfirmTitle">确认操作</h3></div>
+        <div class="dialog-body">
+            <p class="confirm-msg"></p>
+            <div class="form-actions">
+                <button type="button" class="btn" id="ConfirmCancel">取消</button>
+                <button type="button" class="btn primary" id="ConfirmOk">确认</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<script src="js/common.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

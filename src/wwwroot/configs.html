@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备配置 — N2N User Server</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">N2</div>
+            <div>
+                <div class="brand-name">N2N User Server</div>
+                <div class="brand-sub">管理控制台</div>
+            </div>
+        </div>
+        <nav class="nav" id="Nav">
+            <a data-href="/admin" data-nav="admin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                控制台
+            </a>
+            <a data-href="/users" data-nav="users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                用户管理
+            </a>
+            <a data-href="/configs" data-nav="configs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+                设备配置
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <a href="#" id="LogoutBtn" style="all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:8px;color:#aab1c0;font-size:13.5px;">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                退出登录
+            </a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1>设备配置</h1>
+                <p class="desc">管理用户设备的 N2N 边缘配置（公钥由设备名 + 密码派生，明文密码存库为既定设计）</p>
+            </div>
+            <button class="btn primary" id="BtnAddConfig">＋ 新建设备配置</button>
+        </header>
+
+        <div class="content">
+            <section class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>用户 ID</th><th>设备名</th><th>所属社区</th>
+                                <th>超级节点</th><th>公钥 (key)</th><th>N2N 密码</th>
+                                <th style="text-align:right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ConfigRows"></tbody>
+                    </table>
+                    <div class="empty" id="ConfigEmpty" style="display:none">
+                        暂无设备配置。创建前请先在“控制台”建立社区，并在“用户管理”建立账号
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- 配置 新建/编辑 弹窗 -->
+<dialog class="dialog" id="ConfigDialog">
+    <form id="ConfigForm">
+        <div class="dialog-head">
+            <h3 id="ConfigDialogTitle">新建设备配置</h3>
+            <p id="ConfigDialogSub">公钥由服务端按 设备名 + 密码 派生（N2nUserKey）</p>
+        </div>
+        <div class="dialog-body">
+            <div class="field" id="CfgUserField">
+                <label for="CfgUser">所属用户 <span class="tip">每个用户仅一份配置</span></label>
+                <select class="select" id="CfgUser" required></select>
+            </div>
+            <div class="field">
+                <label for="CfgDevice">设备名</label>
+                <input class="input" id="CfgDevice" required>
+            </div>
+            <div class="field">
+                <label for="CfgCommunity">所属社区 <span class="tip">需先在控制台创建社区</span></label>
+                <select class="select" id="CfgCommunity" required></select>
+            </div>
+            <div class="field">
+                <label for="CfgPassword">N2N 密码 <span class="tip">边缘节点认证用，可随时修改（将重新派生公钥）</span></label>
+                <input class="input" id="CfgPassword" required>
+            </div>
+            <div class="field">
+                <label for="CfgSnIp">自定义超级节点地址 <span class="tip">可选；留空跟随全局（config.url）。用于域名经 CDN 代理等无法直连 UDP 的场景</span></label>
+                <input class="input" id="CfgSnIp" placeholder="留空跟随全局">
+            </div>
+            <div class="field">
+                <label for="CfgSnPort">自定义超级节点端口 <span class="tip">可选；留空跟随全局（config.supernode_port）</span></label>
+                <input class="input" id="CfgSnPort" type="number" min="1" max="65535" placeholder="留空跟随全局">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn" id="ConfigCancel">取消</button>
+                <button type="submit" class="btn primary" id="ConfigSave">保存</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<!-- 通用确认弹窗 -->
+<dialog class="dialog" id="ConfirmDialog">
+    <form method="dialog">
+        <div class="dialog-head"><h3 id="ConfirmTitle">确认操作</h3></div>
+        <div class="dialog-body">
+            <p class="confirm-msg"></p>
+            <div class="form-actions">
+                <button type="button" class="btn" id="ConfirmCancel">取消</button>
+                <button type="button" class="btn primary" id="ConfirmOk">确认</button>
+            </div>
+        </div>
+    </form>
+</dialog>
+
+<script src="js/common.js"></script>
+<script src="js/configs.js"></script>
+</body>
+</html>
