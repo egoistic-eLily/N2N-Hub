@@ -1,6 +1,7 @@
 # N2N-Hub
 
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](LICENSE)
+
 [![Language](https://img.shields.io/badge/Language-English-blue)](README.md) [![文档](https://img.shields.io/badge/文档-中文-red)](docs/README.zh-CN.md)
 
 **N2N-Hub is a lightweight management platform for [n2n](https://github.com/ntop/n2n) VPN deployments.**
@@ -26,13 +27,23 @@ N2N-Hub is designed as a management hub for a native N2N deployment rather than 
 
 N2N-Hub works together with the native [N2N](https://github.com/ntop/n2n) project and does not replace its VPN components.
 
-The N2N supernode and edge programs remain responsible for the actual VPN networking. N2N-Hub manages the surrounding users, communities, configuration, administration, and supernode service.
+The N2N `supernode` and `edge` programs remain responsible for the actual VPN networking. N2N-Hub manages the surrounding users, communities, configuration, administration, and supernode service.
 
 ## Deployment model
 
 N2N-Hub is intended to run as the management service for an N2N deployment. The native N2N supernode is normally operated as part of the same deployment and can be managed by N2N-Hub.
 
-Client applications can obtain the configuration they need from N2N-Hub and then use the native N2N edge component for the actual VPN connection.
+Client applications can obtain the configuration they need from N2N-Hub and then use the native N2N `edge` component for the actual VPN connection.
+
+## Client application
+
+N2N-Hub is designed to work with a dedicated client application for end users.
+
+The N2N-Hub client is currently under active development and is not yet included in this repository or the current release.
+
+The client will provide a native user-facing interface for connecting to an N2N-Hub deployment and managing the local N2N connection.
+
+The client is planned as a separate project and will be published when it reaches a suitable level of stability and completeness.
 
 ## Getting started
 
